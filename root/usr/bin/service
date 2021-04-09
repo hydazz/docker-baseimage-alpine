@@ -1,0 +1,35 @@
+#!/usr/bin/with-contenv bash
+
+# ~~~~~~~~~~~~~~~~~~~~~~~
+# set colours
+# ~~~~~~~~~~~~~~~~~~~~~~~
+
+red='\033[1;31m'   # red
+green='\033[1;32m' # Green
+bold='\033[1;37m'  # white bold
+nc='\033[0m'       # no colour
+
+action=$1
+service=$2
+services="$(ls -1 /var/run/s6/services/ | grep -v ^"s6-fdholderd")"
+
+if [ -z "${service}" ]; then
+	echo -e "${red}>>> ERROR: ${bold}Service not specified, valid services: ${services}${nc}"
+	exit 1
+elif [ -d /var/run/s6/services/"${service}" ]; then
+	if [ "${action}" = "restart" ]; then
+		echo -e "${green}>>> ${bold}Restarting ${service}${nc}"
+		s6-svc -q /var/run/s6/services/"${service}"
+	elif [ "${action}" = "stop" ]; then
+		echo -e "${green}>>> ${bold}Stopping ${service}${nc}"
+		s6-svc -d /var/run/s6/services/"${service}"
+	elif [ "${action}" = "start" ]; then
+		echo -e "${green}>>> ${bold}Starting ${service}${nc}"
+		s6-svc -u /var/run/s6/services/"${service}"
+	else
+		echo -e "${red}>>> ERROR: ${bold}Invalid usage, usage 'service <stop/start/restart> <service>'${nc}"
+	fi
+else
+	echo -e "${red}>>> ERROR: ${bold}Invalid service, valid services: ${services}${nc}"
+	exit 1
+fi
