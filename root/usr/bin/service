@@ -14,7 +14,8 @@ service=$2
 services="$(ls -1 /var/run/s6/services/ | grep -v ^"s6-fdholderd")"
 
 if [ -z "${service}" ]; then
-	echo -e "${red}>>> ERROR: ${bold}Service not specified, valid services: ${services}${nc}"
+	echo -e "${red}>>> ERROR: ${bold}Invalid service, valid services:"
+	echo -e "${services}${nc}"
 	exit 1
 elif [ -d /var/run/s6/services/"${service}" ]; then
 	if [ "${action}" = "restart" ]; then
@@ -30,6 +31,7 @@ elif [ -d /var/run/s6/services/"${service}" ]; then
 		echo -e "${red}>>> ERROR: ${bold}Invalid usage, usage 'service <stop/start/restart> <service>'${nc}"
 	fi
 else
-	echo -e "${red}>>> ERROR: ${bold}Invalid service, valid services: ${services}${nc}"
+	echo -e "${red}>>> ERROR: ${bold}Invalid service, valid services:"
+	echo -e "${services}${nc}"
 	exit 1
 fi
