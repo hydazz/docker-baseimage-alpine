@@ -50,8 +50,8 @@ RUN set -xe && \
 		tar && \
 	curl -o \
 		/etc/apk/keys/hydaz.rsa.pub \
-		"https://packages.hydenet.work/hydaz.rsa.pub" && \
-	echo "https://packages.hydenet.work/alpine" >>/etc/apk/repositories && \
+		"https://packages.hyde.services/hydaz.rsa.pub" && \
+	echo "https://packages.hyde.services/alpine" >>/etc/apk/repositories && \
 	echo "**** install runtime packages ****" && \
 	apk add --no-cache \
 		bash \
