@@ -1,4 +1,4 @@
-#!/usr/bin/with-contenv bash
+#!/bin/bash
 
 # ~~~~~~~~~~~~~~~~~~~~~~~
 # set colours
@@ -13,9 +13,21 @@ action=$1
 service=$2
 services="$(ls -1 /var/run/s6/services/ | grep -v ^"s6-fdholderd")"
 
+# allow use of <stop/start/restart> <service> and <service> <stop/start/restart>
+if [[ ${service} =~ (start|stop|restart) ]]; then
+	newaction="$service"
+	newservice="$action"
+	service="$newservice"
+	action="$newaction"
+fi
+
+if [[ ! ${action} =~ (start|stop|restart) ]]; then
+	echo -e "${red}>>> ERROR: ${bold}'${action}' is not a valid action, valid action are: start, stop and restart${nc}"
+	exit 1
+fi
+
 if [ -z "${service}" ]; then
-	echo -e "${red}>>> ERROR: ${bold}Invalid service, valid services:"
-	echo -e "${services}${nc}"
+	echo -e "${red}>>> ERROR: ${bold}No service specified, usage 'service <start/stop/restart> <service>'${nc}"
 	exit 1
 elif [ -d /var/run/s6/services/"${service}" ]; then
 	if [ "${action}" = "restart" ]; then
@@ -27,11 +39,9 @@ elif [ -d /var/run/s6/services/"${service}" ]; then
 	elif [ "${action}" = "start" ]; then
 		echo -e "${green}>>> ${bold}Starting ${service}${nc}"
 		s6-svc -u /var/run/s6/services/"${service}"
-	else
-		echo -e "${red}>>> ERROR: ${bold}Invalid usage, usage 'service <stop/start/restart> <service>'${nc}"
 	fi
 else
-	echo -e "${red}>>> ERROR: ${bold}Invalid service, valid services:"
-	echo -e "${services}${nc}"
+	echo -e "${red}>>> ERROR: ${bold}'${service}' is not a valid service, valid services:"
+	echo -e "${nc}${services}${nc}"
 	exit 1
 fi
